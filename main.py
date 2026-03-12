@@ -5,12 +5,19 @@ import os
 from fastapi.staticfiles import StaticFiles
 import uuid
 from fastapi.security.api_key import APIKeyHeader
-from dotenv import load_dotenv
 import mimetypes
-import bot
+from dotenv import load_dotenv
 from apscheduler.schedulers.background import BackgroundScheduler
 import telebot
 from contextlib import asynccontextmanager
+
+load_dotenv('keys.env')
+token = os.getenv('notifbot')
+chatid = int(os.getenv('ownerid'))
+
+import bot
+
+bot = telebot.TeleBot(token)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -42,8 +49,6 @@ app.mount("/files", StaticFiles(directory=UPLOAD_DIR), name="files")
 @app.get("/")
 def health():
     return {"status": "running"}
-
-load_dotenv('keys.env')
 
 API_KEY = os.getenv('key')
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
@@ -96,11 +101,6 @@ async def upload1(
         "content_type": file.content_type,
         "bytes": len(data),
     }
-
-token = os.getenv('notifbot')
-chatid = int(os.getenv('ownerid'))
-
-bot = telebot.TeleBot(token)
 
 def purge():
     deleted = 0
