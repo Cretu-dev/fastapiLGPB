@@ -1,4 +1,5 @@
 import telebot
+import threading
 from dotenv import load_dotenv
 import os
 
@@ -18,5 +19,11 @@ def filtru_acces(message):
     else:
         return
 
+def start_polling():
+    bot.polling()   
+
+polling_thread = threading.Thread(target=start_polling)
+polling_thread.daemon = True
+polling_thread.start()
+
 print('Botul este activ')
-#bot.polling()
