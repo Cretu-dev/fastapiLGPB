@@ -15,7 +15,7 @@ from contextlib import asynccontextmanager
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     scheduler = BackgroundScheduler()
-    scheduler.add_job(purge, 'interval', seconds = 10)
+    scheduler.add_job(purge, 'interval', minutes = 30)
     scheduler.start()
 
     bot.send_message(chatid, 'A pornit serverul, sunt pe standby')
