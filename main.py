@@ -10,14 +10,15 @@ from dotenv import load_dotenv
 from apscheduler.schedulers.background import BackgroundScheduler
 import telebot
 from contextlib import asynccontextmanager
+import time
 
 load_dotenv('keys.env')
 token = os.getenv('notifbot')
-chatid = int(os.getenv('ownerid'))
+chatid = int(os.getenv('ownerid', '0'))
 
 import bot
 
-bot = telebot.TeleBot(token)
+notif_bot = telebot.TeleBot(token)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -25,7 +26,7 @@ async def lifespan(app: FastAPI):
     scheduler.add_job(purge, 'interval', hours = 2)
     scheduler.start()
 
-    bot.send_message(chatid, 'A pornit serverul, sunt pe standby')
+    notif_bot.send_message(chatid, 'A pornit serverul, sunt pe standby')
 
     yield
     scheduler.shutdown(wait=False)
@@ -104,15 +105,17 @@ async def upload1(
 
 def purge():
     deleted = 0
+    timelimit = time.time() - 20
     if os.path.exists(UPLOAD_DIR):
         for filename in os.listdir(UPLOAD_DIR):
             filepath = os.path.join(UPLOAD_DIR, filename)
             try:
                 if os.path.isfile(filepath) or os.path.islink(filepath):
-                    os.unlink(filepath)
-                    deleted += 1
+                    if os.path.getmtime(filepath) < timelimit:
+                        os.remove(filepath)
+                        notif_bot.send_message(chatid, f'Deleted file: {filepath}', parse_mode='Markdown')
+                        deleted += 1
             except Exception as e:
                 print(f'Eroare la stergere {e}')
-        if deleted > 0:
-            bot.send_message(chatid, 'Upload directory purged!', parse_mode='Markdown')
+            
 
