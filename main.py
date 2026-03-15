@@ -14,7 +14,7 @@ import time
 
 load_dotenv('keys.env')
 token = os.getenv('notifbot')
-chatid = int(os.getenv('ownerid', '0'))
+chatid = int(os.getenv('technical_group_id', '0'))
 
 import bot
 
@@ -23,7 +23,7 @@ notif_bot = telebot.TeleBot(token)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     scheduler = BackgroundScheduler()
-    scheduler.add_job(purge, 'interval', hours = 2)
+    scheduler.add_job(purge, 'interval', hours = 0.25)
     scheduler.start()
 
     notif_bot.send_message(chatid, 'A pornit serverul, sunt pe standby')
