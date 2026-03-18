@@ -93,7 +93,7 @@ async def upload1(
     with open(filepath, 'wb') as f: # deschide fisierul in write binary si inchide automat 
         f.write(data) # scrie bytesii in fisier
 
-    public_url = f"https://anymore-called-surfing-complications.trycloudflare.com/files/{filename}"
+    public_url = f"https://diamond-went-overall-philosophy.trycloudflare.com/{filename}"
     
     return {
         "ok": True,
